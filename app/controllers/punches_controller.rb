@@ -28,7 +28,7 @@ class PunchesController < ApplicationController
   # GET /punches
   # GET /punches.xml
   def index
-    @punches = Punch.paginate(:page => params[:page], :per_page => Punch.per_page)
+    @punches = Punch.paginate(:page => params[:page], :per_page => Punch.per_page).all
     @punch = Punch.new
 
     respond_to do |format|
