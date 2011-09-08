@@ -147,6 +147,9 @@ h2.important a.home {
 	background: green;
 }
 
+.year, .month {
+	background:black;
+}
 .action:hover {
 	background: darkblue;
 	text-decoration: none;
