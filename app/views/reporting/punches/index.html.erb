@@ -44,40 +44,15 @@
 	<ul class="drop_down">
 		<li><%= link_to "all", reporting_path(params[:act], params[:project], params[:client], params[:month], nil), :class => "month" %></li>
 		<% this_year = Time.now.year %>
-		<% [this_year-2,this_year-1,this_year].each do |y| %>
+		<% [this_year,this_year-1,this_year-2,this_year-3].each do |y| %>
 			<li><%= link_to y, reporting_path(params[:act], params[:project], params[:client], params[:month], y), :class => "month" %></li>
 		<% end %>
 	</ul>
 	</li>
 </ul>
 
-<% if params[:year] && params[:month]%>
-<br/>
-	<h3>Hours by Date</h3>
-	<% from = Date.new(params[:year].to_i,params[:month].to_i).beginning_of_month %>
-	<% to = Date.new(params[:year].to_i,params[:month].to_i).end_of_month%>
-	<table width="100%" cellpadding="0" cellspacing="0">
-		<tr>
-			<th>Date</th>
-			<th>Hours</th>
-		 	<th>Projects</th>
-			<th>Actions</th>
-		</tr>
-		<% (from..to).select{|d| d}.each do |d| %>
-			<% current_punches =  @punches.in_day(d.to_time) %>
-			<tr class="<%= cycle("even", "odd") %>">
-				<td class="title"><span class=""><%= d.to_s(:short) %></span></td>
-				<td class="hours"><%= minutes_to_hours( current_punches.sum(:duration_in_minutes)) %></td>
-				<td class="hours"><%= current_punches.tag_counts_on(:projects).collect{|t| t.name }.join(", ") %></td>
-				<td class="hours"><%= current_punches.tag_counts_on(:actions).collect{|t| t.name }.join(", ") %></td>
-	    <% end %>
-		<tr>
-			<td class="title final"></td>
-			<td class="hours final"><%= minutes_to_hours( @punches.in_month_and_year(params[:month],params[:year]).sum(:duration_in_minutes)) %></td>
-			<td class="hours final"></td>
-			<td class="hours final"></td>
-		</tr>
-	</table>
+<% if params[:year] && params[:month]%>	
+	<%= render :partial => "hours_by_date", :locals => { :punches => @punches } %>
 <% else %>
 	<div id="hours_breakdown">
 		<div class="section left">
@@ -95,85 +70,13 @@
 		<div class="clear"></div>
 	</div>
 	<% unless params[:project] %>
-	<h3>Hours by Project</h3>
-	<table width="100%" cellpadding="0" cellspacing="0">
-		<tr>
-			<th>Project</th>
-			<th>Today</th>
-			<th>This Week</th>
-			<th>This Month</th>
-			<th>This Year</th>
-		</tr>
-		<% @punches.tag_counts_on(:projects).each do |a| %>
-			<tr class="<%= cycle("even", "odd") %>">
-				<td class="title"><span class="important project"><%= a.name %></span></td>
-				<td class="hours"><%= minutes_to_hours( @punches.since(Time.now.beginning_of_day).tagged_with(a, :on => :projects).sum(:duration_in_minutes)) %></td>
-				<td class="hours"><%= minutes_to_hours( @punches.since(Time.now.beginning_of_week).tagged_with(a, :on => :projects).sum(:duration_in_minutes)) %></td>
-				<td class="hours"><%= minutes_to_hours( @punches.since(Time.now.beginning_of_month).tagged_with(a, :on => :projects).sum(:duration_in_minutes)) %></td>
-				<td class="hours"><%= minutes_to_hours( @punches.since(Time.now.beginning_of_year).tagged_with(a, :on => :projects).sum(:duration_in_minutes)) %></td>
-	    <% end %>
-		<tr>
-			<td class="title final"></td>
-			<td class="hours final"><%= minutes_to_hours( @punches.since(Time.now.beginning_of_day).sum(:duration_in_minutes)) %></td>
-			<td class="hours final"><%= minutes_to_hours( @punches.since(Time.now.beginning_of_week).sum(:duration_in_minutes)) %></td>
-			<td class="hours final"><%= minutes_to_hours( @punches.since(Time.now.beginning_of_month).sum(:duration_in_minutes)) %></td>
-			<td class="hours final"><%= minutes_to_hours( @punches.since(Time.now.beginning_of_year).sum(:duration_in_minutes)) %></td>
-		</tr>
-	</table>
+		<%= render :partial => "hours_by_project", :locals => { :punches => @punches } %>
 	<% end %>
 	<% unless params[:act]%>
-	<h3>Hours by Action</h3>
-	<table width="100%" cellpadding="0" cellspacing="0">
-		<tr>
-			<th>Action</th>
-			<th>Today</th>
-			<th>This Week</th>
-			<th>This Month</th>
-			<th>This Year</th>
-		</tr>
-		<% @punches.tag_counts_on(:actions).each do |a| %>
-			<tr class="<%= cycle("even", "odd") %>">
-				<td class="title"><span class="important action"><%= a.name %></span></td>
-				<td class="hours"><%= minutes_to_hours( @punches.since(Time.now.beginning_of_day).tagged_with(a, :on => :actions).sum(:duration_in_minutes)) %></td>
-				<td class="hours"><%= minutes_to_hours( @punches.since(Time.now.beginning_of_week).tagged_with(a, :on => :actions).sum(:duration_in_minutes)) %></td>
-				<td class="hours"><%= minutes_to_hours( @punches.since(Time.now.beginning_of_month).tagged_with(a, :on => :actions).sum(:duration_in_minutes)) %></td>
-				<td class="hours"><%= minutes_to_hours( @punches.since(Time.now.beginning_of_year).tagged_with(a, :on => :actions).sum(:duration_in_minutes)) %></td>
-	    <% end %>
-		<tr>
-			<td class="title final"></td>
-			<td class="hours final"><%= minutes_to_hours( @punches.since(Time.now.beginning_of_day).sum(:duration_in_minutes)) %></td>
-			<td class="hours final"><%= minutes_to_hours( @punches.since(Time.now.beginning_of_week).sum(:duration_in_minutes)) %></td>
-			<td class="hours final"><%= minutes_to_hours( @punches.since(Time.now.beginning_of_month).sum(:duration_in_minutes)) %></td>
-			<td class="hours final"><%= minutes_to_hours( @punches.since(Time.now.beginning_of_year).sum(:duration_in_minutes)) %></td>
-		</tr>
-	</table>
+		<%= render :partial => "hours_by_action", :locals => { :punches => @punches } %>
 	<% end %>
 	<% unless params[:client]%>
-		<h3>Hours by Client</h3>
-	<table width="100%" cellpadding="0" cellspacing="0">
-		<tr>
-			<th>client</th>
-			<th>Today</th>
-			<th>This Week</th>
-			<th>This Month</th>
-			<th>This Year</th>
-		</tr>
-		<% @punches.tag_counts_on(:clients).each do |a| %>
-			<tr class="<%= cycle("even", "odd") %>">
-				<td class="title"><span class="important client"><%= a.name %></span></td>
-				<td class="hours"><%= minutes_to_hours(@punches.since(Time.now.beginning_of_day).tagged_with(a, :on => :clients).sum(:duration_in_minutes)) %></td>
-				<td class="hours"><%= minutes_to_hours(@punches.since(Time.now.beginning_of_week).tagged_with(a, :on => :clients).sum(:duration_in_minutes)) %></td>
-				<td class="hours"><%= minutes_to_hours(@punches.since(Time.now.beginning_of_month).tagged_with(a, :on => :clients).sum(:duration_in_minutes)) %></td>
-				<td class="hours"><%= minutes_to_hours(@punches.since(Time.now.beginning_of_year).tagged_with(a, :on => :clients).sum(:duration_in_minutes)) %></td>
-	    <% end %>
-		<tr>
-			<td class="title final"></td>
-			<td class="hours final"><%= minutes_to_hours(@punches.since(Time.now.beginning_of_day).sum(:duration_in_minutes)) %></td>
-			<td class="hours final"><%= minutes_to_hours(@punches.since(Time.now.beginning_of_week).sum(:duration_in_minutes)) %></td>
-			<td class="hours final"><%= minutes_to_hours(@punches.since(Time.now.beginning_of_month).sum(:duration_in_minutes)) %></td>
-			<td class="hours final"><%= minutes_to_hours(@punches.since(Time.now.beginning_of_year).sum(:duration_in_minutes)) %></td>
-		</tr>
-	</table>
+		<%= render :partial => "hours_by_client", :locals => { :punches => @punches } %>
 	<% end %>
 <% end %>
 <h3>Recent Punches</h3>

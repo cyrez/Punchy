@@ -3,20 +3,26 @@ module ApplicationHelper
 	def hours_for(project)
   	minutes = Punch.tagged_with(project).since(1.month.ago).sum(:duration_in_minutes)
   	return minutes_to_hours(minutes)
-  	end
+  end
   	
-  	def minutes_to_hours(minutes)
-  		hours = minutes / 60
-  		minutes = minutes %= 60
-  		if minutes > 0
-  		output = "<span class='time'>#{hours}<span class='h'>H</span>#{minutes}<span class='m'>M</span></span>"
-  		elsif hours == 0
-  			output = "-"
-  		else
-  		output = "<span class='time'>#{hours}<span class='h'>H</span></span>"
-  		end
-  		return output.html_safe
-  	end
+  def minutes_to_hours(minutes)
+		hours = minutes / 60
+		minutes = minutes %= 60
+		if minutes > 0
+		output = "<span class='time'>#{hours}<span class='h'>H</span>#{minutes}<span class='m'>M</span></span>"
+		elsif hours == 0
+			output = "-"
+		else
+		output = "<span class='time'>#{hours}<span class='h'>H</span></span>"
+		end
+		return output.html_safe
+  end
+  
+  def minutes_to_hours_text(minutes,seperator = ",")
+		hours = minutes / 60
+		minutes = minutes %= 60
+		return (minutes+hours)<=0 ? 0 : "#{hours}#{seperator}#{minutes}"
+  end
 	
 	def six_month_client_action_chart(client)
 		require 'google_chart'
@@ -61,8 +67,8 @@ module ApplicationHelper
 		b
 	end
 	
-	def reporting_path(action, project, client, month=nil, year=nil)
-		reporting_punches_path(:act => action, :project => project, :client => client, :month => month, :year => year)
+	def reporting_path(action, project, client, month=nil, year=nil, format = nil)
+		reporting_punches_path(:act => action, :project => project, :client => client, :month => month, :year => year, :format => format)
 	end
 	
 	#need to generate a random color for the graphs, this could be better like specific colors for specific actions across the board, but this will do for now
