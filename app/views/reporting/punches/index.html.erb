@@ -3,9 +3,9 @@
 	<li>
 		<a href="#" class="important action"><%= params[:act] || "All Actions" %></a>
 <ul class="drop_down">
-	<li><%= link_to "All Actions", reporting_path(nil, params[:project], params[:client], params[:month], params[:from_year]), :class => "action" %></li>
+	<li><%= link_to "All Actions", reporting_path(nil, params[:project], params[:client], params[:from_month], params[:from_year], params[:to_month], params[:to_year]), :class => "action" %></li>
 	<% @punches.tag_counts_on(:actions).each do |a| %>
-		<li><%= link_to a.name, reporting_path(a.name, params[:project], params[:client], params[:month], params[:from_year]), :class => "action" %></li>
+		<li><%= link_to a.name, reporting_path(a.name, params[:project], params[:client], params[:from_month], params[:from_year], params[:to_month], params[:to_year]), :class => "action" %></li>
 	<% end %>
 </ul>
 </li>
@@ -13,9 +13,9 @@
 <li>
 	<a href="#" class="important project"><%= params[:project] || "All Projects" %></a>
 <ul class="drop_down">
-	<li><%= link_to "All Projects", reporting_path(params[:act], nil, params[:client], params[:month], params[:from_year]), :class => "project" %></li>
+	<li><%= link_to "All Projects", reporting_path(params[:act], nil, params[:client], params[:from_month], params[:from_year], params[:to_month], params[:to_year]), :class => "project" %></li>
 	<% @punches.tag_counts_on(:projects).each do |p| %>
-		<li><%= link_to p.name, reporting_path(params[:act], p.name, params[:client], params[:month], params[:from_year]), :class => "project" %></li>
+		<li><%= link_to p.name, reporting_path(params[:act], p.name, params[:client], params[:from_month], params[:from_year], params[:to_month], params[:to_year]), :class => "project" %></li>
 	<% end %>
 </ul>
 </li>
@@ -23,36 +23,58 @@
 <li>
 	<a href="#" class="important client"><%= params[:client] || "All Clients" %></a>
 <ul class='drop_down'>
-	<li><%= link_to "All Clients", reporting_path(params[:act], params[:project], nil, params[:month], params[:from_year]), :class => "client" %></li>
+	<li><%= link_to "All Clients", reporting_path(params[:act], params[:project], nil, params[:from_month], params[:from_year], params[:to_month], params[:to_year]), :class => "client" %></li>
 	<% @punches.tag_counts_on(:clients).each do |c| %>
-		<li><%= link_to c.name, reporting_path(params[:act], params[:project], c.name, params[:month], params[:from_year] ), :class => "client" %></li>
+		<li><%= link_to c.name, reporting_path(params[:act], params[:project], c.name, params[:from_month], params[:from_year], params[:to_month], params[:to_year]), :class => "client" %></li>
 	<% end %>
 </ul>
 </li>
 </ul><br/>
 <ul class="reporting_filters">
-	<li>on</li>
-	<li><a href="#" class="important month"><%= params[:month] || "Month" %></a>
+	<li>from/on</li>
+	<li><a href="#" class="important month"><%= params[:from_month] || "Month" %></a>
 	<ul class="drop_down">
-		<li><%= link_to "all", reporting_path(params[:act], params[:project], params[:client], nil, params[:from_year]), :class => "month" %></li>
+		<li><%= link_to "all", reporting_path(params[:act], params[:project], params[:client], nil, params[:from_year], params[:to_month], params[:to_year]), :class => "month" %></li>
 		<% (1..12).each do |m| %>
-			<li><%= link_to m, reporting_path(params[:act], params[:project], params[:client], m, params[:from_year]), :class => "month" %></li>
+			<li><%= link_to m, reporting_path(params[:act], params[:project], params[:client], m, params[:from_year], params[:to_month], params[:to_year]), :class => "month" %></li>
 		<% end %>
 	</ul>
 	</li>
 	<li><a href="#" class="important from_year"><%= params[:from_year] || "Year" %></a>
 	<ul class="drop_down">
-		<li><%= link_to "all", reporting_path(params[:act], params[:project], params[:client], params[:month], nil), :class => "month" %></li>
+		<li><%= link_to "all", reporting_path(params[:act], params[:project], params[:client], params[:from_month], nil, params[:to_month], params[:to_year]), :class => "year" %></li>
 		<% this_year = Time.now.year %>
 		<% [this_year,this_year-1,this_year-2,this_year-3].each do |y| %>
-			<li><%= link_to y, reporting_path(params[:act], params[:project], params[:client], params[:month], y), :class => "month" %></li>
+			<li><%= link_to y, reporting_path(params[:act], params[:project], params[:client], params[:from_month], y, params[:to_month], params[:to_year]), :class => "year" %></li>
+		<% end %>
+	</ul>
+	</li>
+	<li>to</li>
+	<li><a href="#" class="important month"><%= params[:to_month] || "Month" %></a>
+	<ul class="drop_down">
+		<li><%= link_to "all", reporting_path(params[:act], params[:project], params[:client], params[:from_month], params[:from_year], nil, params[:to_year]), :class => "month" %></li>
+		<% (1..12).each do |m| %>
+			<li><%= link_to m, reporting_path(params[:act], params[:project], params[:client], params[:from_month], params[:from_year], m, params[:to_year]), :class => "month" %></li>
+		<% end %>
+	</ul>
+	</li>
+	<li><a href="#" class="important from_year"><%= params[:to_year] || "Year" %></a>
+	<ul class="drop_down">
+		<li><%= link_to "all", reporting_path(params[:act], params[:project], params[:client], params[:from_month], params[:from_year], params[:to_month], nil), :class => "year" %></li>
+		<% this_year = Time.now.year %>
+		<% [this_year,this_year-1,this_year-2,this_year-3].each do |y| %>
+			<li><%= link_to y, reporting_path(params[:act], params[:project], params[:client], params[:from_month], params[:from_year], params[:to_month], y), :class => "year" %></li>
 		<% end %>
 	</ul>
 	</li>
 </ul>
 
-<% if params[:from_year] && params[:month]%>	
-	<%= render :partial => "hours_by_date", :locals => { :punches => @punches } %>
+<% if params[:from_year] && params[:to_year] %>	
+	<%= render :partial => "monthly_hours", :locals => { :punches => @punches } %>
+<% elsif params[:from_year] && params[:from_month] %>	
+	<%= render :partial => "daily_hours", :locals => { :punches => @punches } %>
+<% elsif params[:from_year] %>	
+	<%= render :partial => "monthly_hours", :locals => { :punches => @punches } %>
 <% else %>
 	<div id="hours_breakdown">
 		<div class="section left">
@@ -76,7 +98,7 @@
 		<%= render :partial => "hours_by_action", :locals => { :punches => @punches } %>
 	<% end %>
 	<% unless params[:client]%>
-		<%= render :partial => "hours_by_clientfrom_year", :locals => { :punches => @punches } %>
+		<%= render :partial => "hours_by_client", :locals => { :punches => @punches } %>
 	<% end %>
 <% end %>
 <h3>Recent Punches</h3>

@@ -67,8 +67,8 @@ module ApplicationHelper
 		b
 	end
 	
-	def reporting_path(action, project, client, month=nil, year=nil, format = nil)
-		reporting_punches_path(:act => action, :project => project, :client => client, :month => month, :from_year => year, :format => format)
+	def reporting_path(action, project, client, from_month=nil, from_year=nil, to_month=nil, to_year=nil, format = nil)
+		reporting_punches_path(:act => action, :project => project, :client => client, :from_month => from_month, :from_year => from_year, :to_month => to_month, :to_year => to_year,:format => format)
 	end
 	
 	#need to generate a random color for the graphs, this could be better like specific colors for specific actions across the board, but this will do for now

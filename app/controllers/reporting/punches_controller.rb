@@ -37,10 +37,14 @@ class Reporting::PunchesController < ApplicationController
   	#	@punches2 = @punches.where("created_at < ?", params[:to])
   	#end
   	if params[:from_year]
-  	  if params[:month]
-  	    @punches = @punches.in_month_and_year(params[:month],params[:from_year])
+  	  from_month = params[:from_month] || 1
+  	  to_month = params[:to_month] || 12
+  	  if params[:to_year]
+  	    @punches = @punches.between(Time.new(params[:from_year],from_month).beginning_of_month, Time.new(params[:to_year],to_month).end_of_month)
+  	  elsif params[:from_month]
+  	    @punches = @punches.in_month(Time.new(params[:from_year],params[:from_month]))
   	  else
-  	    @punches = @punches.in_year(params[:from_year])
+  	    @punches = @punches.in_year(Time.new(params[:from_year]))
   	  end
   	end
     if params[:act]
@@ -56,7 +60,7 @@ class Reporting::PunchesController < ApplicationController
       format.html # index.html.erb
       format.xml  { render :xml => @punches }
       format.csv do
-        render_csv("#{params[:from_year]}_#{params[:month]}_stunden")
+        render_csv("#{params[:from_year]}_#{params[:from_month]}_stunden")
       end
     end
   end

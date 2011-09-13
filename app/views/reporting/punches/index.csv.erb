@@ -1,7 +1,7 @@
 Datum;Stunden
 <% require "csv" %>
-<% from = Date.new(params[:from_year].to_i,params[:month].to_i).beginning_of_month %>
-<% to = Date.new(params[:from_year].to_i,params[:month].to_i).end_of_month%>
+<% from = Date.new(params[:from_year].to_i,params[:from_month].to_i).beginning_of_month %>
+<% to = Date.new(params[:from_year].to_i,params[:from_month].to_i).end_of_month%>
 <%= CSV.generate(:col_sep => ";", :row_sep => "\r\n") do |csv|
 	(from..to).select{|d| d}.each do |d|
 		current_punches = @punches.in_day(d.to_time) 
@@ -9,7 +9,7 @@ Datum;Stunden
 		#current_punches.tag_counts_on(:projects).collect{|t| t.name }.join(", ")
 		#current_punches.tag_counts_on(:actions).collect{|t| t.name }.join(", ")
 	end
-	csv << [nil,minutes_to_hours_text(@punches.in_month_and_year(params[:month],params[:from_year]).sum(:duration_in_minutes))]
+	csv << [nil,minutes_to_hours_text(@punches.in_month(Time.new(params[:from_year],params[:from_month])).sum(:duration_in_minutes))]
 end %>
 
 

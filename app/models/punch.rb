@@ -8,9 +8,10 @@ class Punch < ActiveRecord::Base
 	scope :in_last_month, where("punches.created_at > ?", 1.month.ago)
 	scope :months_ago, lambda { |lambda| where("punches.created_at > ? AND punches.created_at < ?", lambda.months.ago.beginning_of_month, (lambda - 1).months.ago.beginning_of_month)}
 	scope :since, lambda { |lambda| where("punches.created_at > ?", lambda)}
-	scope :in_month_and_year, lambda {|month,year| where("punches.created_at > ? AND punches.created_at < ?", Time.new(year,month).beginning_of_month, Time.new(year,month).end_of_month)}
-	scope :in_year, lambda {|year| where("punches.created_at > ? AND punches.created_at < ?", Time.new(year).beginning_of_year, Time.new(year).end_of_year)}
-	scope :in_day, lambda {|day| where("punches.created_at > ? AND punches.created_at < ?", day.beginning_of_day, day.end_of_day)}
+	scope :in_month, lambda {|date| where("punches.created_at > ? AND punches.created_at < ?", date.beginning_of_month, date.end_of_month)}
+	scope :in_year, lambda {|date| where("punches.created_at > ? AND punches.created_at < ?", date.beginning_of_year, date.end_of_year)}
+	scope :in_day, lambda {|date| where("punches.created_at > ? AND punches.created_at < ?", date.beginning_of_day, date.end_of_day)}
+	scope :between, lambda {|from,to| where("punches.created_at > ? AND punches.created_at < ?", from, to) }
 	#sum hours scopes
 	def self.hours_today
 		self.since(Time.now.beginning_of_day).sum(:duration_in_minutes)

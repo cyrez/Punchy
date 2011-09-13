@@ -147,7 +147,7 @@ h2.important a.home {
 	background: green;
 }
 
-.year, .month {
+.month, .year {
 	background:black;
 }
 .action:hover {
@@ -334,6 +334,10 @@ table {
 
 td.title {
 	text-align: center;
+}
+
+td.details {
+	text-align: left;
 }
 
 td {

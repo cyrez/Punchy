@@ -1,0 +1,33 @@
+	<br/>
+	<h3>Daily Hours <small>(<%= link_to 'export', reporting_path(params[:act], params[:project], params[:client], params[:from_month], params[:year], :csv) %>)</small></h3>
+	<% from = Date.new(params[:from_year].to_i,params[:from_month].to_i).beginning_of_month %>
+	<% to = Date.new(params[:from_year].to_i,params[:from_month].to_i).end_of_month%>
+	<table width="100%" cellpadding="0" cellspacing="0">
+		<tr>
+			<th>Date</th>
+			<th>Hours</th>
+		 	<th>Details</th>
+		</tr>
+		<% (from..to).select{|d| d}.each do |d| %>
+			<% current_punches =  punches.in_day(d.to_time) %>
+			<% sum_minutes = current_punches.sum(:duration_in_minutes) %>
+			<% next unless sum_minutes > 0 %>
+			<tr class="<%= cycle("even", "odd") %>">
+				<td class="title"><span class=""><%= d.to_s(:short) %></span></td>
+				<td class="hours"><%= minutes_to_hours( sum_minutes ) %></td>
+				<td class="details">
+					<% current_punches.tag_counts_on(:projects).each do |p| %>
+						<span class="important project"><%= p.name %></span>
+						<% current_punches.tagged_with(p, :on => :projects).tag_counts_on(:actions).each do |a| %>
+							<span class="important action"><%= a.name %></span>
+						<% end %>
+						(<%= minutes_to_hours(current_punches.tagged_with(p, :on => :projects).sum(:duration_in_minutes))%>)
+					<% end %>
+				</td>
+	    <% end %>
+		<tr>
+			<td class="title final"></td>
+			<td class="hours final"><%= minutes_to_hours( punches.in_month(Time.new(params[:from_year],params[:from_month])).sum(:duration_in_minutes)) %></td>
+			<td class="hours final"></td>
+		</tr>
+	</table>
