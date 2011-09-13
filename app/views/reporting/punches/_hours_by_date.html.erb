@@ -1,7 +1,7 @@
 	<br/>
 	<h3>Hours by Date <small>(<%= link_to 'export', reporting_path(params[:act], params[:project], params[:client], params[:month], params[:year], :csv) %>)</small></h3>
-	<% from = Date.new(params[:year].to_i,params[:month].to_i).beginning_of_month %>
-	<% to = Date.new(params[:year].to_i,params[:month].to_i).end_of_month%>
+	<% from = Date.new(params[:from_year].to_i,params[:month].to_i).beginning_of_month %>
+	<% to = Date.new(params[:from_year].to_i,params[:month].to_i).end_of_month%>
 	<table width="100%" cellpadding="0" cellspacing="0">
 		<tr>
 			<th>Date</th>
@@ -21,7 +21,7 @@
 	    <% end %>
 		<tr>
 			<td class="title final"></td>
-			<td class="hours final"><%= minutes_to_hours( punches.in_month_and_year(params[:month],params[:year]).sum(:duration_in_minutes)) %></td>
+			<td class="hours final"><%= minutes_to_hours( punches.in_month_and_year(params[:month],params[:from_year]).sum(:duration_in_minutes)) %></td>
 			<td class="hours final"></td>
 			<td class="hours final"></td>
 		</tr>

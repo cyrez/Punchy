@@ -3,9 +3,9 @@
 	<li>
 		<a href="#" class="important action"><%= params[:act] || "All Actions" %></a>
 <ul class="drop_down">
-	<li><%= link_to "All Actions", reporting_path(nil, params[:project], params[:client], params[:month], params[:year]), :class => "action" %></li>
+	<li><%= link_to "All Actions", reporting_path(nil, params[:project], params[:client], params[:month], params[:from_year]), :class => "action" %></li>
 	<% @punches.tag_counts_on(:actions).each do |a| %>
-		<li><%= link_to a.name, reporting_path(a.name, params[:project], params[:client], params[:month], params[:year]), :class => "action" %></li>
+		<li><%= link_to a.name, reporting_path(a.name, params[:project], params[:client], params[:month], params[:from_year]), :class => "action" %></li>
 	<% end %>
 </ul>
 </li>
@@ -13,9 +13,9 @@
 <li>
 	<a href="#" class="important project"><%= params[:project] || "All Projects" %></a>
 <ul class="drop_down">
-	<li><%= link_to "All Projects", reporting_path(params[:act], nil, params[:client], params[:month], params[:year]), :class => "project" %></li>
+	<li><%= link_to "All Projects", reporting_path(params[:act], nil, params[:client], params[:month], params[:from_year]), :class => "project" %></li>
 	<% @punches.tag_counts_on(:projects).each do |p| %>
-		<li><%= link_to p.name, reporting_path(params[:act], p.name, params[:client], params[:month], params[:year]), :class => "project" %></li>
+		<li><%= link_to p.name, reporting_path(params[:act], p.name, params[:client], params[:month], params[:from_year]), :class => "project" %></li>
 	<% end %>
 </ul>
 </li>
@@ -23,9 +23,9 @@
 <li>
 	<a href="#" class="important client"><%= params[:client] || "All Clients" %></a>
 <ul class='drop_down'>
-	<li><%= link_to "All Clients", reporting_path(params[:act], params[:project], nil, params[:month], params[:year]), :class => "client" %></li>
+	<li><%= link_to "All Clients", reporting_path(params[:act], params[:project], nil, params[:month], params[:from_year]), :class => "client" %></li>
 	<% @punches.tag_counts_on(:clients).each do |c| %>
-		<li><%= link_to c.name, reporting_path(params[:act], params[:project], c.name, params[:month], params[:year] ), :class => "client" %></li>
+		<li><%= link_to c.name, reporting_path(params[:act], params[:project], c.name, params[:month], params[:from_year] ), :class => "client" %></li>
 	<% end %>
 </ul>
 </li>
@@ -34,13 +34,13 @@
 	<li>on</li>
 	<li><a href="#" class="important month"><%= params[:month] || "Month" %></a>
 	<ul class="drop_down">
-		<li><%= link_to "all", reporting_path(params[:act], params[:project], params[:client], nil, params[:year]), :class => "month" %></li>
+		<li><%= link_to "all", reporting_path(params[:act], params[:project], params[:client], nil, params[:from_year]), :class => "month" %></li>
 		<% (1..12).each do |m| %>
-			<li><%= link_to m, reporting_path(params[:act], params[:project], params[:client], m, params[:year]), :class => "month" %></li>
+			<li><%= link_to m, reporting_path(params[:act], params[:project], params[:client], m, params[:from_year]), :class => "month" %></li>
 		<% end %>
 	</ul>
 	</li>
-	<li><a href="#" class="important year"><%= params[:year] || "Year" %></a>
+	<li><a href="#" class="important from_year"><%= params[:from_year] || "Year" %></a>
 	<ul class="drop_down">
 		<li><%= link_to "all", reporting_path(params[:act], params[:project], params[:client], params[:month], nil), :class => "month" %></li>
 		<% this_year = Time.now.year %>
@@ -51,7 +51,7 @@
 	</li>
 </ul>
 
-<% if params[:year] && params[:month]%>	
+<% if params[:from_year] && params[:month]%>	
 	<%= render :partial => "hours_by_date", :locals => { :punches => @punches } %>
 <% else %>
 	<div id="hours_breakdown">
@@ -76,7 +76,7 @@
 		<%= render :partial => "hours_by_action", :locals => { :punches => @punches } %>
 	<% end %>
 	<% unless params[:client]%>
-		<%= render :partial => "hours_by_client", :locals => { :punches => @punches } %>
+		<%= render :partial => "hours_by_clientfrom_year", :locals => { :punches => @punches } %>
 	<% end %>
 <% end %>
 <h3>Recent Punches</h3>
